@@ -1,10 +1,11 @@
 import { MongoClient } from 'mongodb';
+import { MONGO_URI } from '../../constants/env.mjs';
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
+if (!MONGO_URI) {
+  throw new Error('Please define the MONGO_URI environment variable inside .env.local');
 }
 
-const uri = process.env.MONGODB_URI;
+const uri = MONGO_URI;
 const options = {};
 
 let client;

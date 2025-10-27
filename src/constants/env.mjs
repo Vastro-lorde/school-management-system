@@ -6,5 +6,6 @@ export const {
     JWT_SECRET,
     BREVO_API_KEY,
     EMAIL_FROM,
-    FIREBASE_SERVICE_ACCOUNT
+    FIREBASE_SERVICE_ACCOUNT,
+    BREVO_USER,
 } = process.env;

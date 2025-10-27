@@ -1,4 +1,4 @@
-import { forgotPassword } from '../../../server/services/authService';
+import { forgotPassword } from '../../../src/server/services/authService.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
