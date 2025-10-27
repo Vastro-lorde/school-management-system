@@ -1,9 +1,9 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
-import clientPromise from '../../../server/db/mongodb';
-import dbConnect from '../../../server/db/config';
-import User from '../../../server/db/models/User';
+import clientPromise from '../../../src/server/db/mongodb.js';
+import dbConnect from '../../../src/server/db/config.mjs';
+import User from '../../../src/server/db/models/User.js';
 import bcrypt from 'bcrypt';
 
 export default NextAuth({

@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { BREVO_API_KEY, EMAIL_FROM } from '@/constants/env';
+import { BREVO_API_KEY, EMAIL_FROM, BREVO_USER } from '@/constants/env';
 import { APP_NAME } from '@/constants/appDetails';
 
 const transporter = nodemailer.createTransport({
@@ -7,7 +7,7 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false, // true for 465, false for other ports
   auth: {
-    user: '76bc6e001@smtp-brevo.com',
+    user: BREVO_USER,
     pass: BREVO_API_KEY,
   },
 });
