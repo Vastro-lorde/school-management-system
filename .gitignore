@@ -20,11 +20,19 @@
 *.pem
 
 # Local Env Files
+<<<<<<< HEAD
 .env
+=======
+>>>>>>> e50da2b2e2033560fea275d08c6786224d11e3ad
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+<<<<<<< HEAD
 .env.*
+=======
+.env
+
+>>>>>>> e50da2b2e2033560fea275d08c6786224d11e3ad
 # Firebase
 firebase-service-account.json

@@ -1,10 +1,15 @@
 import mongoose from 'mongoose';
+<<<<<<< HEAD
 import bcrypt from 'bcrypt';
 import dbConnect from '../src/server/db/config.mjs';
 import Setting from '../src/server/db/models/Setting.mjs';
 import User from '../src/server/db/models/User.js';
 import StudentProfile from '../src/server/db/models/StudentProfile.js';
 import StaffProfile from '../src/server/db/models/StaffProfile.js';
+=======
+import dbConnect from '../src/server/db/config.mjs';
+import Setting from '../src/server/db/models/Setting.mjs';
+>>>>>>> e50da2b2e2033560fea275d08c6786224d11e3ad
 
 const settings = [
     {
@@ -67,6 +72,7 @@ async function seedDatabase() {
     }
   }
 
+<<<<<<< HEAD
     // Seed admin user
     const adminEmail = 'omatsolaseund@gmail.com';
     const adminPassword = 'Admin@12345'; // change in production
@@ -115,6 +121,8 @@ async function seedDatabase() {
         }
     }
 
+=======
+>>>>>>> e50da2b2e2033560fea275d08c6786224d11e3ad
   console.log('Database seeded successfully!');
   mongoose.connection.close();
 }
