@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
+import { getAbout } from '@/api/settings';
 
 export default function About() {
   const [about, setAbout] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function fetchAbout() {
-      const res = await fetch('/api/settings/about');
-      const data = await res.json();
+      const { data, error } = await getAbout();
+      if (error) {
+        setError(error);
+        return;
+      }
       setAbout(data);
     }
     fetchAbout();
@@ -15,7 +20,11 @@ export default function About() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <main className="container mx-auto px-4 py-16">
-        {about ? (
+        {error ? (
+          <div className="text-center">
+            <p className="text-red-400">Failed to load. {error}</p>
+          </div>
+        ) : about ? (
           <>
             <div className="text-center">
               <h1 className="text-5xl md:text-7xl font-extrabold mb-4">{about.value.title}</h1>

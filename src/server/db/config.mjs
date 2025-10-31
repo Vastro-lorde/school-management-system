@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { MONGO_URI } from '../../constants/env.mjs';
+import { runBootstrap } from './bootstrap.mjs';
 
 if (!MONGO_URI) {
   throw new Error('Please define the MONGO_URI environment variable inside .env.local');
@@ -21,7 +22,14 @@ async function dbConnect() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGO_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGO_URI, opts).then(async (mongoose) => {
+      // run idempotent bootstrap after connection
+      try {
+        await runBootstrap();
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('[dbConnect] Bootstrap failed:', e?.message || e);
+      }
       return mongoose;
     });
   }

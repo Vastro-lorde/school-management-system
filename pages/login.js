@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import { signIn } from 'next-auth/react';
+import Link from 'next/link';
+import AuthCard from '@/components/AuthCard';
+import LoadingButton from '@/components/LoadingButton';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -13,23 +18,25 @@ export default function Login() {
     setError('');
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      setLoading(true);
+      // Use NextAuth to establish a server-side session so SSR guards pass
+      const res = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+        callbackUrl: '/dashboard',
       });
-
-      if (!res.ok) {
-        throw new Error('Login failed');
+      if (res?.error) throw new Error(res.error);
+      // NextAuth returns a URL; navigate explicitly when redirect is false
+      if (res?.url) {
+        await router.push(res.url);
+      } else {
+        await router.push('/dashboard');
       }
-
-      const { token } = await res.json();
-      localStorage.setItem('token', token);
-      router.push('/dashboard'); // Redirect to a protected dashboard page
     } catch (error) {
-      setError(error.message);
+      setError(error.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,36 +45,55 @@ export default function Login() {
       <Head>
         <title>Login - School Management System</title>
       </Head>
-
-      <main className="container mx-auto p-4">
-        <h2 className="text-3xl font-bold mb-4">Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700">Email</label>
+      <AuthCard
+        title="Welcome back"
+        subtitle="Access your dashboard"
+        footer={
+          <div className="text-right">
+            <Link href="/forgot-password" className="text-gray-300 hover:text-white">
+              Forgot password?
+            </Link>
+          </div>
+        }
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-1">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="you@example.com"
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700">Password</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-1">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="••••••••"
               required
             />
           </div>
-          {error && <p className="text-red-500">{error}</p>}
-          <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+          {error && (
+            <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md p-2">
+              {error}
+            </p>
+          )}
+          <LoadingButton
+            type="submit"
+            loading={loading}
+            spinnerLabel="Signing in..."
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-500 hover:to-indigo-500 focus:ring-blue-500"
+          >
             Login
-          </button>
+          </LoadingButton>
         </form>
-      </main>
+      </AuthCard>
     </div>
   );
 }

@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
+import { getHistory } from '@/api/settings';
 
 export default function History() {
   const [history, setHistory] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function fetchHistory() {
-      const res = await fetch('/api/settings/history');
-      const data = await res.json();
+      const { data, error } = await getHistory();
+      if (error) {
+        setError(error);
+        return;
+      }
       setHistory(data);
     }
     fetchHistory();
@@ -22,7 +27,11 @@ export default function History() {
           </p>
         </div>
 
-        {history ? (
+        {error ? (
+          <div className="text-center">
+            <p className="text-red-400">Failed to load history. {error}</p>
+          </div>
+        ) : history ? (
           <div className="relative">
             <div className="border-l-4 border-blue-600 absolute h-full top-0 left-1/2 -ml-2"></div>
             {history.value.map((item, index) => (

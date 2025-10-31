@@ -12,19 +12,19 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     if (cacheService.has(cacheKey)) {
       const cachedData = cacheService.get(cacheKey);
-      return res.status(200).json(cachedData);
+      return res.status(200).json({ success: true, value: cachedData });
     }
 
     try {
       const setting = await Setting.findOne({ key: slug });
       if (!setting) {
-        return res.status(404).json({ message: `Setting '${slug}' not found.` });
+        return res.status(404).json({ success: false, message: `Setting '${slug}' not found.` });
       }
 
       cacheService.set(cacheKey, setting.value);
-      res.status(200).json(setting.value);
+      res.status(200).json({ success: true, value: setting.value });
     } catch (error) {
-      res.status(500).json({ message: 'Server error', error });
+      res.status(500).json({ success: false, message: 'Server error' });
     }
   } else if (req.method === 'POST') {
     const { data } = req.body;
@@ -46,11 +46,11 @@ export default async function handler(req, res) {
       // Invalidate the cache
       cacheService.del(cacheKey);
 
-      res.status(200).json({ message: `Setting '${slug}' updated successfully.` });
+      res.status(200).json({ success: true, message: `Setting '${slug}' updated successfully.` });
     } catch (error) {
-      res.status(500).json({ message: 'Server error', error });
+      res.status(500).json({ success: false, message: 'Server error' });
     }
   } else {
-    res.status(405).json({ message: `Method ${req.method} not allowed.` });
+    res.status(405).json({ success: false, message: `Method ${req.method} not allowed.` });
   }
 }

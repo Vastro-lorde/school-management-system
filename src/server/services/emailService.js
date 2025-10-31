@@ -13,7 +13,8 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendPasswordResetEmail(to, token) {
-  const resetLink = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  const resetLink = `${baseUrl}/reset-password?token=${token}`;
   const mailOptions = {
     from: `"${APP_NAME}" <${EMAIL_FROM}>`,
     to,
@@ -22,6 +23,22 @@ export async function sendPasswordResetEmail(to, token) {
            <p>Please click on the following link, or paste this into your browser to complete the process:</p>
            <p><a href="${resetLink}">${resetLink}</a></p>
            <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>`,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
+export async function sendRegistrationEmail(to, token) {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  const link = `${baseUrl}/register/${token}`;
+  const mailOptions = {
+    from: `"${APP_NAME}" <${EMAIL_FROM}>`,
+    to,
+    subject: 'Complete your registration',
+    html: `<p>Welcome! You've been invited to register for ${APP_NAME}.</p>
+           <p>Click the link below to complete your registration:</p>
+           <p><a href="${link}">${link}</a></p>
+           <p>This link will expire. If you didn't expect this, please ignore the email.</p>`,
   };
 
   await transporter.sendMail(mailOptions);

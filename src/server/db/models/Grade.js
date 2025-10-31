@@ -11,8 +11,10 @@ const GradeSchema = new mongoose.Schema({
     ref: 'Subject',
     required: true,
   },
-  assessmentType: {
-    type: String, // e.g., 'exam', 'quiz', 'assignment'
+  // Link to the Assessment this grade belongs to
+  assessmentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Assessment',
   },
   score: Number,
   grade: String, // e.g., 'A', 'B', 'C'

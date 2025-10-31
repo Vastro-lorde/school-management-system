@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { ROLES, PROFILE_MODELS } = require('../../../constants/enums.js');
 
 const UserSchema = new mongoose.Schema({
   email: {
@@ -12,7 +13,7 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['student', 'teacher', 'staff', 'admin'],
+    enum: ROLES,
     default: 'student',
   },
   isActive: {
@@ -28,7 +29,7 @@ const UserSchema = new mongoose.Schema({
   },
   profileModel: {
     type: String,
-    enum: ['StudentProfile', 'StaffProfile'],
+    enum: PROFILE_MODELS,
   },
   resetPasswordToken: {
     type: String,

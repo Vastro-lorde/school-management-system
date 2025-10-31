@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
+import { getContact } from '@/api/settings';
 
 export default function Contact() {
   const [contact, setContact] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function fetchContact() {
-      const res = await fetch('/api/settings/contact');
-      const data = await res.json();
+      const { data, error } = await getContact();
+      if (error) {
+        setError(error);
+        return;
+      }
       setContact(data);
     }
     fetchContact();
@@ -22,7 +27,11 @@ export default function Contact() {
           </p>
         </div>
 
-        {contact ? (
+        {error ? (
+          <div className="text-center">
+            <p className="text-red-400">Failed to load. {error}</p>
+          </div>
+        ) : contact ? (
           <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8 bg-gray-800 p-8 rounded-lg shadow-2xl">
             <div className="flex flex-col justify-center">
               <h2 className="text-3xl font-bold mb-4">Contact Information</h2>

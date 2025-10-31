@@ -6,7 +6,7 @@ import dbConnect from '../../../src/server/db/config.mjs';
 import User from '../../../src/server/db/models/User.js';
 import bcrypt from 'bcrypt';
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -17,13 +17,18 @@ export default NextAuth({
       async authorize(credentials, req) {
         await dbConnect();
 
-        const user = await User.findOne({ email: credentials.email });
+        // Defensive guards to avoid bcrypt errors like "data and hash arguments required"
+        const email = credentials?.email?.toLowerCase?.().trim?.();
+        const password = credentials?.password;
+        if (!email || !password) return null;
 
-        if (user && bcrypt.compareSync(credentials.password, user.passwordHash)) {
-          return { id: user._id, email: user.email, role: user.role };
-        } else {
-          return null;
-        }
+        const user = await User.findOne({ email });
+        if (!user || !user.passwordHash) return null;
+
+        const ok = await bcrypt.compare(password, user.passwordHash);
+        if (!ok) return null;
+
+        return { id: user._id.toString(), email: user.email, role: user.role };
       }
     })
   ],
@@ -47,4 +52,6 @@ export default NextAuth({
   pages: {
       signIn: '/auth/signin',
   }
-});
+};
+
+export default NextAuth(authOptions);

@@ -6,6 +6,11 @@ const TimetableSchema = new mongoose.Schema({
     ref: 'Class',
     required: true,
   },
+  // Optional link to an Assessment that this timetable relates to (e.g., exam schedule)
+  assessmentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Assessment',
+  },
   day: {
     type: String, // e.g., 'Monday', 'Tuesday'
   },
