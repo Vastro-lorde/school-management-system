@@ -26,4 +26,4 @@
 .env.production.local
 
 # Firebase
-firebase-service-account.json
+firebase-service-account.jsonfirebase-service-account.json
