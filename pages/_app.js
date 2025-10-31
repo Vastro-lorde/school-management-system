@@ -1,5 +1,4 @@
 import { SessionProvider } from 'next-auth/react';
-<<<<<<< HEAD
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/router';
 import '../src/app/globals.css';
@@ -13,10 +12,6 @@ function FullScreenLoader() {
     </div>
   );
 }
-=======
-import '../src/app/globals.css';
-import Header from '../src/components/Header';
->>>>>>> e50da2b2e2033560fea275d08c6786224d11e3ad
 
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter();
@@ -39,7 +34,6 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
   return (
     <SessionProvider session={session}>
       <Header />
-<<<<<<< HEAD
       <Suspense fallback={
         <div className="py-24 grid place-items-center">
           <LoadingSpinner size="lg" label="Loading..." />
@@ -48,9 +42,6 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
         <Component {...pageProps} />
       </Suspense>
       {routeLoading ? <FullScreenLoader /> : null}
-=======
-      <Component {...pageProps} />
->>>>>>> e50da2b2e2033560fea275d08c6786224d11e3ad
     </SessionProvider>
   );
 }

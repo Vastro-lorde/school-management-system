@@ -13,6 +13,7 @@ import {
   FaClipboardList,
   FaRegCircle,
   FaBuilding,
+  FaMoneyBillWave,
 } from 'react-icons/fa';
 
 function normalize(key) {
@@ -35,6 +36,7 @@ export default function MenuIcon({ name, className = 'text-base opacity-80' }) {
   if (key.includes('class') || key.includes('chalk') || key.includes('teacher')) return <FaChalkboardTeacher className={className} />;
   if (key.includes('clipboard')) return <FaClipboardList className={className} />;
   if (key.includes('department') || key.includes('building')) return <FaBuilding className={className} />;
+  if (key.includes('money') || key.includes('payment') || key.includes('wallet') || key.includes('fee')) return <FaMoneyBillWave className={className} />;
 
   return <FaRegCircle className={className} />;
 }

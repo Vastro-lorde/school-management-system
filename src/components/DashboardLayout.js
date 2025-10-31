@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import MenuIcon from './MenuIcon';
 import { FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 function SidebarItem({ item, depth = 0, expanded, onToggle }) {
   const hasChildren = item.children && item.children.length > 0;
@@ -49,8 +50,40 @@ function SidebarItem({ item, depth = 0, expanded, onToggle }) {
 
 export default function DashboardLayout({ menu = [], children }) {
   const [expanded, setExpanded] = useState({});
+  const router = useRouter();
   // collapsed by default; expand roots with current route in future enhancement
   const onToggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+
+  // Auto-expand parents of the active route; re-run on route changes
+  useEffect(() => {
+    if (!menu || menu.length === 0) return;
+
+    const pathname = router?.pathname || '';
+
+    function findPath(nodes, predicate, acc = []) {
+      for (const n of nodes) {
+        const nextAcc = acc.concat(n);
+        if (predicate(n)) return nextAcc;
+        if (n.children && n.children.length) {
+          const res = findPath(n.children, predicate, nextAcc);
+          if (res) return res;
+        }
+      }
+      return null;
+    }
+
+    const pathNodes = findPath(
+      menu,
+      (n) => !!n.url && (pathname === n.url || pathname.startsWith(`${n.url}/`))
+    );
+
+    if (pathNodes && pathNodes.length > 1) {
+      const ancestors = pathNodes.slice(0, -1); // all except the leaf
+      const toExpand = {};
+      ancestors.forEach((a) => { toExpand[a._id] = true; });
+      setExpanded((prev) => ({ ...prev, ...toExpand }));
+    }
+  }, [menu, router?.pathname]);
 
   return (
     <div className="min-h-screen flex bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">

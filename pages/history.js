@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-<<<<<<< HEAD
 import { getHistory } from '@/api/settings';
 
 export default function History() {
@@ -13,16 +12,6 @@ export default function History() {
         setError(error);
         return;
       }
-=======
-
-export default function History() {
-  const [history, setHistory] = useState(null);
-
-  useEffect(() => {
-    async function fetchHistory() {
-      const res = await fetch('/api/settings/history');
-      const data = await res.json();
->>>>>>> e50da2b2e2033560fea275d08c6786224d11e3ad
       setHistory(data);
     }
     fetchHistory();
@@ -38,15 +27,11 @@ export default function History() {
           </p>
         </div>
 
-<<<<<<< HEAD
         {error ? (
           <div className="text-center">
             <p className="text-red-400">Failed to load history. {error}</p>
           </div>
         ) : history ? (
-=======
-        {history ? (
->>>>>>> e50da2b2e2033560fea275d08c6786224d11e3ad
           <div className="relative">
             <div className="border-l-4 border-blue-600 absolute h-full top-0 left-1/2 -ml-2"></div>
             {history.value.map((item, index) => (

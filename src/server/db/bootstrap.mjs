@@ -5,6 +5,7 @@ import StudentProfile from './models/StudentProfile.js';
 import StaffProfile from './models/StaffProfile.js';
 import MenuItem from './models/MenuItem.js';
 import Permission from './models/Permission.js';
+import Role from './models/Role.js';
 
 const DEFAULT_ADMIN_EMAIL = process.env.ADMIN_SEED_EMAIL || 'omatsolaseund@gmail.com';
 const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_SEED_PASSWORD || 'Admin@12345';
@@ -99,6 +100,23 @@ async function ensureAdmin() {
   }
 }
 
+async function ensureRoleDocuments() {
+  const base = [
+    { name: 'admin', description: 'System administrator', system: true },
+    { name: 'staff', description: 'School staff', system: true },
+    { name: 'teacher', description: 'Teaching staff', system: true },
+    { name: 'student', description: 'Student user', system: true },
+  ];
+  for (const r of base) {
+    const exists = await Role.findOne({ name: r.name }).lean();
+    if (!exists) {
+      await Role.create({ ...r, active: true });
+      // eslint-disable-next-line no-console
+      console.log('[bootstrap] Seeded role:', r.name);
+    }
+  }
+}
+
 async function ensureSampleStaffAndStudents() {
   const staffList = [
     {
@@ -166,6 +184,14 @@ async function ensureAdminMenus() {
     { label: 'Classes', url: '/admin/classes', icon: 'class', order: 10 },
     { label: 'Assessments', url: '/admin/assessments', icon: 'clipboard', order: 11 },
     { label: 'Departments', url: '/admin/departments', icon: 'building', order: 12 },
+    { label: 'Payment Types', url: '/admin/payment-types', icon: 'money', order: 13 },
+    { label: 'Payment Items', url: '/admin/payment-items', icon: 'money', order: 14 },
+    { label: 'Payments', url: '/admin/payments', icon: 'money', order: 15 },
+    { label: 'Payment Details', url: '/admin/payment-details', icon: 'money', order: 16 },
+    { label: 'Payment Insights', url: '/admin/payment-insights', icon: 'money', order: 17 },
+    { label: 'Student Payments', url: '/staff/student-payments', icon: 'money', order: 18 },
+    { label: 'Student Lookup', url: '/staff/student-lookup', icon: 'users', order: 19 },
+    { label: 'My Payments', url: '/student/payments', icon: 'money', order: 20 },
   ];
 
   // Create menu items if missing
@@ -215,8 +241,9 @@ async function ensureAdminMenus() {
 async function ensureDefaultRolePermissions() {
   // Define which menu labels each role should be allowed to access by default
   const defaults = {
-    staff: ['Timetables', 'Students', 'Subjects', 'Classes', 'Assessments'],
+    staff: ['Timetables', 'Students', 'Subjects', 'Classes', 'Assessments', 'Student Payments', 'Student Lookup'],
     teacher: ['Timetables', 'Students', 'Subjects', 'Classes', 'Assessments'],
+    student: ['My Payments'],
     // students typically don't see admin pages; leave empty by default
     // student: []
   };
@@ -246,6 +273,7 @@ export async function runBootstrap() {
   try {
     await ensureSettings();
     await ensureAdmin();
+    await ensureRoleDocuments();
     await ensureSampleStaffAndStudents();
     await ensureAdminMenus();
     await ensureDefaultRolePermissions();

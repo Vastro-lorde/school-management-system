@@ -13,23 +13,11 @@ export default function Home() {
             A modern, intuitive, and powerful platform to manage your educational institution.
           </p>
           <div className="flex justify-center gap-4">
-<<<<<<< HEAD
-            <Link href="/portal" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full transition duration-300">
-              Go to Portal
+            <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full transition duration-300">
+              Login
             </Link>
             <Link href="/about" className="bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full transition duration-300">
               Learn More
-=======
-            <Link href="/about">
-              <a className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full transition duration-300">
-                Learn More
-              </a>
-            </Link>
-            <Link href="/contact">
-              <a className="bg-gray-700 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full transition duration-300">
-                Get in Touch
-              </a>
->>>>>>> e50da2b2e2033560fea275d08c6786224d11e3ad
             </Link>
           </div>
         </div>

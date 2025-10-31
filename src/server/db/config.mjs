@@ -1,9 +1,6 @@
 import mongoose from 'mongoose';
 import { MONGO_URI } from '../../constants/env.mjs';
-<<<<<<< HEAD
 import { runBootstrap } from './bootstrap.mjs';
-=======
->>>>>>> e50da2b2e2033560fea275d08c6786224d11e3ad
 
 if (!MONGO_URI) {
   throw new Error('Please define the MONGO_URI environment variable inside .env.local');
