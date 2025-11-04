@@ -43,3 +43,15 @@ The current plan was to create a multi-page informational website for a school. 
     *   Successfully built the application.
 7.  **Finalization:**
     *   Updated this `blueprint.md` file to reflect all changes.
+
+## Current Change Plan: Payment Module Enhancements
+
+**Goal:** Finalize the student payment workflow by exposing the correct metadata and enabling installment updates without relying on admin endpoints.
+
+**Steps:**
+
+1. Add a dedicated `/api/student/payment-details/meta` endpoint that returns the active payments available to the logged-in student based on their class and payment effective/due dates.
+2. Create `/api/student/payment-details/[id]/installments` to allow students to append installments to their own payment records while automatically updating totals and statuses.
+3. Update the student payments page to consume the new endpoints, handle loading and error states, and guard installment actions when a payment is already finalized.
+
+All steps have been completed in this iteration.
