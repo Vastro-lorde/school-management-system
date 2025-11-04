@@ -33,8 +33,9 @@ export default function AdminPaymentInsightsPage({ menu }) {
     setLoading(false);
   }
 
-  useEffect(() => { load(); // initial
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    load();
+    // initial load only
   }, []);
 
   const maxByPayment = useMemo(() => Math.max(0, ...((data?.byPayment || []).map(x => x.total))), [data]);

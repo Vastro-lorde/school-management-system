@@ -33,18 +33,24 @@ export default function AdminPaymentsPage({ menu }) {
   const [editing, setEditing] = useState(null);
 
   const loadMaster = async () => {
-    const [t, c, s, d, pi] = await Promise.all([
-      fetch('/api/admin/payment-types').then(r => r.json()),
-      fetch('/api/admin/classes').then(r => r.json()),
-      fetch('/api/admin/subjects').then(r => r.json()),
-      fetch('/api/admin/departments').then(r => r.json()),
-      fetch('/api/admin/payment-items').then(r => r.json()),
+    const responses = await Promise.all([
+      fetch('/api/admin/payment-types'),
+      fetch('/api/admin/classes'),
+      fetch('/api/admin/subjects'),
+      fetch('/api/admin/departments'),
+      fetch('/api/admin/payment-items'),
     ]);
-    setTypes(t.value || []);
-    setClasses(c.value || []);
-    setSubjects(s.value || []);
-    setDepartments(d.value || []);
-    setCatalogItems(pi.value || []);
+    const [typesRes, classesRes, subjectsRes, departmentsRes, itemsRes] = await Promise.all(responses.map(r => r.json()));
+    if (!typesRes.success) throw new Error(typesRes.message || 'Unable to load payment types');
+    if (!classesRes.success) throw new Error(classesRes.message || 'Unable to load classes');
+    if (!subjectsRes.success) throw new Error(subjectsRes.message || 'Unable to load subjects');
+    if (!departmentsRes.success) throw new Error(departmentsRes.message || 'Unable to load departments');
+    if (!itemsRes.success) throw new Error(itemsRes.message || 'Unable to load payment items');
+    setTypes((typesRes.value || []).filter(t => t.active !== false));
+    setClasses(classesRes.value || []);
+    setSubjects(subjectsRes.value || []);
+    setDepartments(departmentsRes.value || []);
+    setCatalogItems(itemsRes.value || []);
   };
 
   const load = async () => {
