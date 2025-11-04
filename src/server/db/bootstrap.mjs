@@ -181,17 +181,19 @@ async function ensureAdminMenus() {
     { label: 'Logs', url: '/admin/logs', icon: 'log', order: 7 },
     { label: 'Staffs', url: '/admin/staffs', icon: 'briefcase', order: 8 },
     { label: 'Subjects', url: '/admin/subjects', icon: 'book', order: 9 },
-    { label: 'Classes', url: '/admin/classes', icon: 'class', order: 10 },
-    { label: 'Assessments', url: '/admin/assessments', icon: 'clipboard', order: 11 },
-    { label: 'Departments', url: '/admin/departments', icon: 'building', order: 12 },
-    { label: 'Payment Types', url: '/admin/payment-types', icon: 'money', order: 13 },
-    { label: 'Payment Items', url: '/admin/payment-items', icon: 'money', order: 14 },
-    { label: 'Payments', url: '/admin/payments', icon: 'money', order: 15 },
-    { label: 'Payment Details', url: '/admin/payment-details', icon: 'money', order: 16 },
-    { label: 'Payment Insights', url: '/admin/payment-insights', icon: 'money', order: 17 },
-    { label: 'Student Payments', url: '/staff/student-payments', icon: 'money', order: 18 },
-    { label: 'Student Lookup', url: '/staff/student-lookup', icon: 'users', order: 19 },
-    { label: 'My Payments', url: '/student/payments', icon: 'money', order: 20 },
+    { label: 'Courses', url: '/admin/courses', icon: 'book-open', order: 10 },
+    { label: 'Classes', url: '/admin/classes', icon: 'class', order: 11 },
+    { label: 'Faculty', url: '/admin/faculty', icon: 'university', order: 12 },
+    { label: 'Assessments', url: '/admin/assessments', icon: 'clipboard', order: 13 },
+    { label: 'Departments', url: '/admin/departments', icon: 'building', order: 14 },
+    { label: 'Payment Types', url: '/admin/payment-types', icon: 'money', order: 15 },
+    { label: 'Payment Items', url: '/admin/payment-items', icon: 'money', order: 16 },
+    { label: 'Payments', url: '/admin/payments', icon: 'money', order: 17 },
+    { label: 'Payment Details', url: '/admin/payment-details', icon: 'money', order: 18 },
+    { label: 'Payment Insights', url: '/admin/payment-insights', icon: 'money', order: 19 },
+    { label: 'Student Payments', url: '/staff/student-payments', icon: 'money', order: 20 },
+    { label: 'Student Lookup', url: '/staff/student-lookup', icon: 'users', order: 21 },
+    { label: 'My Payments', url: '/student/payments', icon: 'money', order: 22 },
   ];
 
   // Create menu items if missing
@@ -241,8 +243,8 @@ async function ensureAdminMenus() {
 async function ensureDefaultRolePermissions() {
   // Define which menu labels each role should be allowed to access by default
   const defaults = {
-    staff: ['Timetables', 'Students', 'Subjects', 'Classes', 'Assessments', 'Student Payments', 'Student Lookup'],
-    teacher: ['Timetables', 'Students', 'Subjects', 'Classes', 'Assessments'],
+    staff: ['Timetables', 'Students', 'Subjects', 'Courses', 'Classes', 'Assessments', 'Student Payments', 'Student Lookup'],
+    teacher: ['Timetables', 'Students', 'Subjects', 'Courses', 'Classes', 'Assessments'],
     student: ['My Payments'],
     // students typically don't see admin pages; leave empty by default
     // student: []
