@@ -5,6 +5,7 @@ import clientPromise from '../../../src/server/db/mongodb.js';
 import dbConnect from '../../../src/server/db/config.mjs';
 import User from '../../../src/server/db/models/User.js';
 import bcrypt from 'bcrypt';
+import { MONGO_URI } from '../../../src/constants/env.mjs';
 
 export const authOptions = {
   providers: [
@@ -32,7 +33,7 @@ export const authOptions = {
       }
     })
   ],
-  adapter: MongoDBAdapter(clientPromise),
+  adapter: MONGO_URI ? MongoDBAdapter(clientPromise) : undefined,
   session: {
     strategy: "jwt",
   },

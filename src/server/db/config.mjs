@@ -2,9 +2,10 @@ import mongoose from 'mongoose';
 import { MONGO_URI } from '../../constants/env.mjs';
 import { runBootstrap } from './bootstrap.mjs';
 
-if (!MONGO_URI) {
-  throw new Error('Please define the MONGO_URI environment variable inside .env.local');
-}
+const isBuildTime = process.env.npm_lifecycle_event === 'build';
+const missingUriError = !MONGO_URI
+  ? new Error('Please define the MONGO_URI environment variable inside .env.local')
+  : null;
 
 let cached = global.mongoose;
 
@@ -13,6 +14,13 @@ if (!cached) {
 }
 
 async function dbConnect() {
+  if (!MONGO_URI) {
+    if (isBuildTime) {
+      return null;
+    }
+    throw missingUriError;
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
