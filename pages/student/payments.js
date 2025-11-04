@@ -32,13 +32,21 @@ export default function StudentPaymentsPage({ menu }) {
   const [instForm, setInstForm] = useState({ amount: 0, date: new Date().toISOString().slice(0,10), method: 'cash', reference: '' });
 
   async function loadAll() {
-    const [list, payments] = await Promise.all([
-      fetch('/api/student/payment-details').then(r => r.json()),
-      fetch('/api/admin/payment-details/meta').then(r => r.json()),
-    ]);
-    if (list?.success) setRows(list.value || []);
-    if (payments?.success) setMeta({ payments: payments.value.payments || [] });
-    setLoading(false);
+    setLoading(true);
+    try {
+      const [list, payments] = await Promise.all([
+        fetch('/api/student/payment-details').then(r => r.json()),
+        fetch('/api/student/payment-details/meta').then(r => r.json()),
+      ]);
+      if (list?.success) setRows(list.value || []);
+      else if (list?.message) alert(list.message);
+      if (payments?.success) setMeta({ payments: payments.value.payments || [] });
+    } catch (err) {
+      console.error(err);
+      alert('Failed to load payments');
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => { loadAll(); }, []);
@@ -91,7 +99,8 @@ export default function StudentPaymentsPage({ menu }) {
 
   async function addInst(e) {
     e.preventDefault();
-    const res = await fetch(`/api/student/payment-details/${instFor}/.installments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(instForm) }).then(r => r.json());
+    if (!instFor) return;
+    const res = await fetch(`/api/student/payment-details/${instFor}/installments`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(instForm) }).then(r => r.json());
     if (res?.success) {
       setInstOpen(false);
       setInstFor(null);
@@ -131,7 +140,13 @@ export default function StudentPaymentsPage({ menu }) {
                   <td className="px-3 py-2">{Number(row.amount || 0).toLocaleString()}</td>
                   <td className="px-3 py-2 capitalize">{row.status}</td>
                   <td className="px-3 py-2">
-                    <button className="px-2 py-1 text-sm border rounded" onClick={() => { setInstOpen(true); setInstFor(row._id); }}>Add installment</button>
+                    <button
+                      className="px-2 py-1 text-sm border rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={() => { setInstOpen(true); setInstFor(row._id); setInstForm({ amount: 0, date: new Date().toISOString().slice(0,10), method: 'cash', reference: '' }); }}
+                      disabled={row.status === 'completed' || row.status === 'failed' || row.status === 'refunded'}
+                    >
+                      Add installment
+                    </button>
                   </td>
                 </tr>
               ))}
