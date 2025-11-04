@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "seed": "node -r dotenv/config --experimental-modules scripts/seed.mjs dotenv_config_path=.env.local"
+    "seed": "node -r dotenv/config --experimental-modules scripts/seed.mjs dotenv_config_path=.env.local",
+    "lint": "npx eslint . --max-warnings=0"
   },
   "dependencies": {
     "@next-auth/mongodb-adapter": "^1.1.3",
