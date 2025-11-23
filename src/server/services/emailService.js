@@ -1,45 +1,28 @@
-import nodemailer from 'nodemailer';
-import { BREVO_API_KEY, EMAIL_FROM, BREVO_USER } from '@/constants/env';
-import { APP_NAME } from '@/constants/appDetails';
+import { EMAIL_PROVIDER } from '../../constants/env.mjs';
+import NodemailerProvider from './email/providers/nodemailerProvider.js';
+import BrevoProvider from './email/providers/brevoProvider.js';
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: BREVO_USER,
-    pass: BREVO_API_KEY,
-  },
-});
+const getEmailProvider = () => {
+  console.log(`Using email provider: ${EMAIL_PROVIDER}`);
+  switch (EMAIL_PROVIDER) {
+    case 'brevo':
+      return new BrevoProvider();
+    case 'nodemailer':
+    default:
+      return new NodemailerProvider();
+  }
+};
+
+const emailProvider = getEmailProvider();
 
 export async function sendPasswordResetEmail(to, token) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
-  const resetLink = `${baseUrl}/reset-password?token=${token}`;
-  const mailOptions = {
-    from: `"${APP_NAME}" <${EMAIL_FROM}>`,
-    to,
-    subject: 'Password Reset',
-    html: `<p>You are receiving this email because you (or someone else) have requested the reset of the password for your account.</p>
-           <p>Please click on the following link, or paste this into your browser to complete the process:</p>
-           <p><a href="${resetLink}">${resetLink}</a></p>
-           <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>`,
-  };
-
-  await transporter.sendMail(mailOptions);
+  await emailProvider.sendPasswordResetEmail(to, token);
 }
 
 export async function sendRegistrationEmail(to, token) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
-  const link = `${baseUrl}/register/${token}`;
-  const mailOptions = {
-    from: `"${APP_NAME}" <${EMAIL_FROM}>`,
-    to,
-    subject: 'Complete your registration',
-    html: `<p>Welcome! You've been invited to register for ${APP_NAME}.</p>
-           <p>Click the link below to complete your registration:</p>
-           <p><a href="${link}">${link}</a></p>
-           <p>This link will expire. If you didn't expect this, please ignore the email.</p>`,
-  };
+  await emailProvider.sendRegistrationEmail(to, token);
+}
 
-  await transporter.sendMail(mailOptions);
+export async function sendInviteEmail(to, token) {
+  await emailProvider.sendInviteEmail(to, token);
 }

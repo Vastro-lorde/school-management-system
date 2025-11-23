@@ -5,8 +5,8 @@ export default function Document() {
     <Html lang="en">
       <Head>
         {/* Favicon and icons */}
-        <link rel="icon" href="/img/logo.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/img/logo.png" />
+        <link rel="icon" href="/icon" type="image/png" />
+        <link rel="apple-touch-icon" href="/icon" />
         {/* Optional: Windows/Android coloring */}
         <meta name="theme-color" content="#0f172a" />
       </Head>
