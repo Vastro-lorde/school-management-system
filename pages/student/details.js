@@ -1,0 +1,67 @@
+import React, { useEffect, useState } from 'react';
+import { getServerSession } from 'next-auth';
+import dbConnect from '../../src/server/db/config.mjs';
+import menuService from '../../src/server/services/menuService.js';
+import permissionService from '../../src/server/services/permissionService.js';
+import { authOptions } from '../api/auth/[...nextauth].js';
+import DashboardLayout from '../../src/components/DashboardLayout';
+
+export default function StudentDetailsPage({ menu }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { (async () => {
+    try { const res = await fetch('/api/student/details').then(r=>r.json()); if (res?.success) setData(res.value); else if (res?.message) alert(res.message); }
+    catch(e){ console.error(e); alert('Failed to load details'); } finally { setLoading(false); }
+  })(); }, []);
+
+  const profile = data?.profile; const cls = data?.class; const reg = data?.registeredSubjects || [];
+
+  return (
+    <DashboardLayout menu={menu}>
+      <h1 className="text-2xl font-semibold mb-4">My Details</h1>
+      {loading ? <div className="py-6 text-center opacity-80">Loading...</div> : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="border rounded p-4">
+            <div className="font-semibold mb-2">Profile</div>
+            <div className="text-sm space-y-1">
+              <div><span className="opacity-70">Admission No:</span> {profile?.admissionNo}</div>
+              <div><span className="opacity-70">Name:</span> {profile?.firstName} {profile?.lastName}</div>
+              <div><span className="opacity-70">DOB:</span> {profile?.dob ? new Date(profile.dob).toLocaleDateString() : ''}</div>
+              <div><span className="opacity-70">Gender:</span> {profile?.gender}</div>
+            </div>
+          </div>
+          <div className="border rounded p-4">
+            <div className="font-semibold mb-2">Class</div>
+            {cls ? (
+              <div className="text-sm space-y-1">
+                <div><span className="opacity-70">Name:</span> {cls.name}</div>
+                <div><span className="opacity-70">Level:</span> {cls.level || '-'}</div>
+                <div><span className="opacity-70">Year:</span> {cls.year || '-'}</div>
+                <div><span className="opacity-70">Subjects:</span> {(cls.subjects||[]).map(s=>s.name).join(', ')}</div>
+              </div>
+            ) : (<div className="text-sm opacity-70">No class assigned</div>)}
+          </div>
+          <div className="border rounded p-4 md:col-span-2">
+            <div className="font-semibold mb-2">Registered Subjects</div>
+            {reg.length === 0 ? (<div className="text-sm opacity-70">No registered subjects yet.</div>) : (
+              <ul className="list-disc pl-6 text-sm">
+                {reg.map(s => <li key={s._id}>{s.name} <span className="opacity-60">({s.subjectCode||''})</span></li>)}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+    </DashboardLayout>
+  );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+  if (!session) return { redirect: { destination: '/login', permanent: false } };
+  await dbConnect();
+  const role = session.user?.role || 'student';
+  const ok = await permissionService.hasAccessToUrl(role, '/student/details');
+  if (!ok) return { redirect: { destination: '/dashboard', permanent: false } };
+  const menu = await menuService.getMenuForRole(session.user?.role || 'student');
+  return { props: { menu: JSON.parse(JSON.stringify(menu)) } };
+}

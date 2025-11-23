@@ -37,10 +37,14 @@ if (!admin.apps.length) {
 
 const bucket = getStorage().bucket();
 
+export const getPublicUrl = (destination) => `https://storage.googleapis.com/${bucket.name}/${destination}`;
+export const getBucketName = () => bucket.name;
+
 export const uploadFile = async (filePath, destination) => {
   try {
     await bucket.upload(filePath, { destination });
     console.log(`${filePath} uploaded to ${destination}`);
+    return getPublicUrl(destination);
   } catch (error) {
     console.error('Error uploading file:', error);
     throw error;

@@ -174,7 +174,7 @@ async function ensureAdminMenus() {
   const baseMenus = [
     { label: 'Users', url: '/admin/users', icon: 'users', order: 1 },
     { label: 'Roles', url: '/admin/roles', icon: 'shield', order: 2 },
-    { label: 'Menu', url: '/admin/menu', icon: 'menu', order: 3 },
+    { label: 'Menus', url: '/admin/menu', icon: 'menu', order: 3 },
     { label: 'Timetables', url: '/admin/timetables', icon: 'calendar', order: 4 },
     { label: 'Students', url: '/admin/students', icon: 'student', order: 5 },
     { label: 'Settings', url: '/admin/settings', icon: 'settings', order: 6 },
@@ -194,6 +194,21 @@ async function ensureAdminMenus() {
     { label: 'Student Payments', url: '/staff/student-payments', icon: 'money', order: 20 },
     { label: 'Student Lookup', url: '/staff/student-lookup', icon: 'users', order: 21 },
     { label: 'My Payments', url: '/student/payments', icon: 'money', order: 22 },
+    { label: 'Register Student', url: '/staff/register-student', icon: 'user-plus', order: 23 },
+    { label: 'My Timetable', url: '/student/timetable', icon: 'calendar', order: 24 },
+    { label: 'My Details', url: '/student/details', icon: 'user', order: 25 },
+    { label: 'My Scores', url: '/student/scores', icon: 'clipboard', order: 26 },
+    { label: 'My Teachers', url: '/student/teachers', icon: 'users', order: 27 },
+  { label: 'Course Registration', url: '/student/course-registration', icon: 'book-open', order: 28 },
+  { label: 'Course Forms', url: '/admin/course-forms', icon: 'book-open', order: 32 },
+  { label: 'Student Change Requests', url: '/staff/student-change-requests', icon: 'clipboard', order: 29 },
+  { label: 'Positions', url: '/admin/positions', icon: 'briefcase', order: 30 },
+  { label: 'Assign Positions', url: '/admin/assign-positions', icon: 'briefcase', order: 31 },
+  { label: 'Memo Inbox', url: '/memos/inbox', icon: 'inbox', order: 33 },
+  { label: 'Memo Outbox', url: '/memos/outbox', icon: 'outbox', order: 34 },
+  { label: 'New Memo', url: '/memos/new', icon: 'compose', order: 35 },
+  { label: 'Student Positions', url: '/admin/student-positions', icon: 'briefcase', order: 36 },
+  { label: 'Staff Student Positions', url: '/staff/student-positions', icon: 'briefcase', order: 37 },
   ];
 
   // Create menu items if missing
@@ -243,11 +258,9 @@ async function ensureAdminMenus() {
 async function ensureDefaultRolePermissions() {
   // Define which menu labels each role should be allowed to access by default
   const defaults = {
-    staff: ['Timetables', 'Students', 'Subjects', 'Courses', 'Classes', 'Assessments', 'Student Payments', 'Student Lookup'],
-    teacher: ['Timetables', 'Students', 'Subjects', 'Courses', 'Classes', 'Assessments'],
-    student: ['My Payments'],
-    // students typically don't see admin pages; leave empty by default
-    // student: []
+  staff: ['Timetables', 'Students', 'Subjects', 'Courses', 'Classes', 'Assessments', 'Student Payments', 'Student Lookup', 'Register Student', 'Student Change Requests', 'Memo Inbox', 'Memo Outbox', 'New Memo', 'Staff Student Positions'],
+  teacher: ['Timetables', 'Students', 'Subjects', 'Courses', 'Classes', 'Assessments', 'Memo Inbox', 'Memo Outbox', 'New Memo'],
+  student: ['My Payments', 'My Timetable', 'My Details', 'My Scores', 'My Teachers', 'Course Registration', 'Memo Inbox', 'New Memo'],
   };
 
   // Build label -> _id map for quick lookup

@@ -1,0 +1,384 @@
+# School Management System – Project Presentation (Consolidated)
+
+All numbered sections from `docs/project-presentation/*.md` are flattened here for single-file review while the original modular files remain for iterative edits.
+
+---
+
+## Section 1 – Title Page
+
+### School Management System
+
+**Capstone Project Submission**
+
+| Item | Details |
+| --- | --- |
+| Project Title | School Management System |
+| Course Title / Course Code | _Update with institution-specific details before submission_ |
+| Date of Submission | 22 November 2025 |
+
+#### Team Members
+
+Contributor names originate from the repository seed data (`scripts/seed.mjs`, `src/server/db/bootstrap.mjs`). Replace matriculation placeholders with official records.
+
+| Name | Role | Matriculation Number |
+| --- | --- | --- |
+| Seun Omatsola | Lead Developer | _Not documented in repository_ |
+| Pelumi Ogunleye | Backend Developer | _Not documented in repository_ |
+| Adegbooye Temitayo Elizabeth | Frontend Developer | _Not documented in repository_ |
+| Akinkunmi Omolara Mary | UI/UX Designer | _Not documented in repository_ |
+
+> **Action required:** insert the real course information and matric numbers before final submission.
+
+---
+
+## Section 2 – Table of Contents
+
+1. Title Page (`01-title-page.md`)
+2. Table of Contents (`02-table-of-contents.md`)
+3. Executive Summary / Abstract (`03-executive-summary.md`)
+4. Introduction (`04-introduction.md`)
+5. System Analysis (`05-system-analysis.md`)
+6. System Design (`06-system-design.md`)
+7. System Implementation (`07-system-implementation.md`)
+8. Testing and Evaluation (`08-testing-and-evaluation.md`)
+9. Deployment (`09-deployment.md`)
+10. System Security and Privacy (`10-security-and-privacy.md`)
+11. Documentation and User Manual (`11-documentation-and-user-manual.md`)
+12. Conclusion and Recommendations (`12-conclusion-and-recommendations.md`)
+13. References (`13-references.md`)
+14. Appendices (`14-appendices.md`)
+
+### List of Figures
+- **Figure 6.1** – Next.js–MongoDB logical architecture (Section 6.1)
+- **Figure 6.2** – Payment workflow data flow diagram (Section 6.3)
+- **Figure 6.3** – Role-based access control (RBAC) use-case view (Section 6.4)
+
+### List of Tables
+- **Table 5.1** – Feasibility analysis summary (Section 5.2)
+- **Table 5.2** – Functional requirements trace (Section 5.4)
+- **Table 6.1** – Core collections and relationships (Section 6.2)
+- **Table 8.1** – Representative test cases (Section 8.1)
+- **Table 9.1** – Deployment runbook (Section 9)
+- **Table 11.1** – User roles and key actions (Section 11)
+
+### List of Appendices
+- **Appendix A** – Sample code snippets (`src/lib/apiClient.js`, `src/server/services/permissionService.js`)
+- **Appendix B** – Screenshot references (home, admin, student payment pages)
+- **Appendix C** – Timeline / Gantt summary (derived from `docs/project-plan.md`)
+
+---
+
+## Section 3 – Executive Summary / Abstract
+
+### Brief Overview
+The School Management System is a full-stack Next.js 15.5 web application (React 19) that centralizes academic, administrative, and financial processes for a single tertiary institution. It exposes dedicated portals for students, teachers, non-teaching staff, and administrators; orchestrates payments and memos; and enforces fine-grained permissions through server-side menu gating.
+
+### Problem Statement
+- Fragmented user experiences for students, staff, and administrators
+- Manual payment reconciliation and receipt generation
+- Limited traceability for approvals, memos, or role assignments
+- Duplicated onboarding work because each functional area keeps its own data store
+
+### Objectives
+- Deliver a unified, responsive interface for all personas
+- Digitize tuition/fee management with simulated payments and installment tracking
+- Provide configurable RBAC and menu provisioning
+- Streamline onboarding via invitation tokens and guided registration
+- Offer analytics-ready datasets (e.g., user role statistics)
+
+### Methods, Technologies, and Outcomes
+- **Frontend**: Next.js Pages Router, Tailwind CSS 4, reusable components (`AuthCard`, `DashboardLayout`, `Header`).
+- **Backend**: API routes backed by MongoDB/Mongoose collections; seeding handled by `src/server/db/bootstrap.mjs`.
+- **Authentication & Authorization**: NextAuth credentials provider with bcrypt hashing; RBAC enforced in services and API routes.
+- **Payments & Workflows**: `Payment` and `PaymentDetail` schemas support class-linked items, due dates, and installments.
+- **Ancillary Services**: Brevo SMTP for invites/password resets, Firebase storage helpers, lightweight cache service.
+
+**Outcome**: A deployable, role-aware management portal with demo-ready data sets for stakeholder reviews.
+
+---
+
+## Section 4 – Introduction
+
+### 4.1 Background
+`blueprint.md` and `docs/project-plan.md` track the journey from a marketing site to an operations-grade School Management System with:
+- Public marketing pages (`pages/index/about/contact/history`)
+- Authenticated portals for admins, staff, teachers, and students (`pages/dashboard`, `pages/admin/*`, `pages/student/*`, `pages/staff/*`)
+- Seeded settings, team history, demo users, and payments (`scripts/seed.mjs`, `src/server/db/bootstrap.mjs`)
+
+### 4.2 Purpose and Scope
+- **Purpose**: Provide one secure platform for academic records, payments, roles, memos, and institutional settings.
+- **Scope**: Single-institution deployment with authentication, RBAC, CRUD modules, payment simulation, memo workflows, and email-based onboarding. Excludes deep LMS, real payment gateways, and native mobile apps.
+
+### 4.3 Objectives
+1. Shared dashboard shell (`DashboardLayout`).
+2. Secure session management (NextAuth + bcrypt) with server-enforced permissions.
+3. Tuition/fee simulation incl. installment plans.
+4. Staff tooling for registration, lookup, memos, change requests.
+5. Institutional configuration stored in MongoDB.
+
+### 4.4 Stakeholders
+Students, teachers, non-teaching staff, administrators, and executive stakeholders consuming analytics and audit data.
+
+### 4.5 Document Structure
+Sections 5–14 map to the original outline in `docs/project-documentation-plan.md`. Each section exists both here and as individual markdown files for modular editing.
+
+---
+
+## Section 5 – System Analysis
+
+### 5.1 Problem Definition
+Manual spreadsheets and siloed portals complicate synchronization, payment tracking, approvals, and consistent branding. The repository consolidates these workflows on a unified Next.js + MongoDB stack.
+
+### 5.2 Feasibility Study (Table 5.1)
+
+| Dimension | Evidence from Repository | Assessment |
+| --- | --- | --- |
+| Technical | Next.js 15.5 + React 19, MongoDB, Firebase helpers, Brevo SMTP | Feasible – modern, well-supported stack |
+| Economic | OSS dependencies; deploy on Vercel + Atlas free tiers | Feasible – low operational cost |
+| Operational | RBAC via `permissionService`, seeded onboarding, dashboards for every persona | Feasible – aligns with institutional workflows |
+
+### 5.3 Requirements Gathering
+Derived from `docs/project-plan.md`, `blueprint.md`, seeded settings, and existing feature pages (student payments, admin users, memos).
+
+### 5.4 System Requirements Specification
+
+**Functional Requirements (Table 5.2 snippet)**
+
+| ID | Requirement | Implemented In |
+| --- | --- | --- |
+| FR-01 | Email/password authentication + sessions | `pages/api/auth/[...nextauth].js`, `pages/login.js` |
+| FR-02 | Invite flow with expiring tokens | `pages/admin/invite.js`, `/api/admin/invite`, `authService.createRegistrationToken` |
+| FR-03 | Role-based menus & URL guards | `menuService`, `permissionService.hasAccessToUrl` |
+| FR-04 | Student payments & installments | `pages/student/payments.js`, `/api/student/payment-details/*`, `PaymentDetail` |
+| FR-05 | Staff registration & lookup | `/staff/register-student.js`, `/staff/student-lookup.js` |
+| FR-06 | Memos (inbox/outbox/new) | `pages/memos/*.js`, `/api/memos/*` |
+| FR-07 | Admin KPIs | `pages/admin/users.js`, `/api/admin/users/stats` |
+| FR-08 | Editable settings | `/api/settings/*`, `Setting` model |
+
+**Non-functional Requirements**
+Performance (timeouts + cache), security (bcrypt, JWT, permission checks), usability (responsive UI), maintainability (layered architecture, seeding), localization (NG defaults).
+
+---
+
+## Section 6 – System Design
+
+### 6.1 Architecture (Figure 6.1)
+```
+[Browser / React Components]
+          │
+          ▼
+[Next.js Pages Router]
+  │    │          │
+  │    ├─ API Routes (auth, admin, staff, student, lookup)
+  │    │      │
+  │    │      ├─ Services (authService, menuService, permissionService,
+  │    │      │            emailService, storageService, cacheService)
+  │    │      │
+  │    │      └─ Mongoose Models (User, StudentProfile, Payment, etc.)
+  │    │
+  │    └─ NextAuth Session Layer (JWT strategy)
+  │
+  └─ Shared UI (Header, DashboardLayout, AuthCard)
+          │
+          ▼
+  External Systems: MongoDB Atlas, Brevo SMTP, Firebase Storage
+```
+SSR dashboards fetch menus server-side; API routes enforce permissions before data access; bootstrap scripts keep demo data consistent.
+
+### 6.2 Database Design (Table 6.1)
+Summary of `User`, `StudentProfile`, `StaffProfile`, `Payment`, `PaymentDetail`, `MenuItem`, `Permission`, `Setting`, and `RegistrationToken` collections plus their relationships.
+
+### 6.3 Data Flow Diagrams (Figure 6.2)
+- Payment workflow: metadata fetch → payment submission → detail persistence → dashboard update.
+- RBAC workflow: `permissionService.hasAccessToUrl` checks before domain logic.
+
+### 6.4 UML Narratives (Figure 6.3)
+Use-case actors, class relationships (aggregation/composition), and login sequence describing NextAuth + menu retrieval.
+
+### 6.5 User Interface Design
+Shared `Header`, `DashboardLayout`, consistent Tailwind styling, gradient buttons, spinner/button components, inline modals.
+
+### 6.6 Design Constraints
+Pages Router retained; requires `MONGO_URI` at runtime; depends on `NEXTAUTH_SECRET`/`NEXT_PUBLIC_APP_URL`; caching currently in-memory per serverless instance.
+
+---
+
+## Section 7 – System Implementation
+
+### 7.1 Tools
+Node.js ≥ 18.18, Next.js 15.5, React 19.1, Tailwind CSS 4, NextAuth, MongoDB Atlas, Brevo SMTP, Firebase Admin SDK, shared UI utilities.
+
+### 7.2 Code Structure
+`pages`, `src/components`, `src/constants`, `src/lib`, `src/server/db`, `src/server/services`, and `scripts/seed.mjs` for CLI seeding.
+
+### 7.3 Integration Strategy
+Authentication flow, menu provisioning, payments pipeline, invitation flow, memo and lookup services.
+
+### 7.4 Testing Hooks
+Planned unit/integration/E2E coverage using Jest, Mongo Memory Server, and Playwright/Cypress per roadmap.
+
+### 7.5 Representative Code Snippet
+```javascript
+const DEFAULT_TIMEOUT_MS = 15000;
+async function safeFetch(path, { method = 'GET', headers, body, timeout = DEFAULT_TIMEOUT_MS } = {}) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const res = await fetch(path, {
+      method,
+      headers: { 'Content-Type': body ? 'application/json' : undefined, ...headers },
+      body: body ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined,
+      signal: controller.signal,
+    });
+    clearTimeout(id);
+    const status = res.status;
+    const json = await res.json().catch(() => null);
+    if (!res.ok) {
+      const message = json?.message || json?.error || `Request failed (${status})`;
+      return { data: null, error: message, status };
+    }
+    return { data: json, error: null, status };
+  } catch (err) {
+    clearTimeout(id);
+    return { data: null, error: err?.message || 'Unknown error', status: 0 };
+  }
+}
+```
+
+---
+
+## Section 8 – Testing and Evaluation
+
+### 8.1 Test Plan (Table 8.1)
+Covers login, RBAC redirects, payment creation, installment append, admin invite, and memo broadcast scenarios—each currently passing via manual smoke tests.
+
+### 8.2 Environment
+Windows 11, Node.js 20.x, MongoDB Atlas/local, Chrome & Edge 119+, `.env.local` with MONGO_URI/NEXTAUTH secrets/Brevo/Firebase placeholders.
+
+### 8.3 Results
+No blocking defects; API timeouts mitigated by `apiClient`; missing env vars caught via `dbConnect` guard.
+
+### 8.4 Performance
+SSR dashboards 200–400 ms locally; student payment table <100 ms for <=50 rows; email invites <5 s. Monitoring integrations planned in Phase 8.
+
+### 8.5 User Feedback
+Pending formal studies; roadmap includes guided tours, richer toasts, and accessibility audits.
+
+---
+
+## Section 9 – Deployment
+
+### 9.1 Platforms
+Vercel (frontend + API), MongoDB Atlas, optional Firebase Storage and Brevo SMTP.
+
+### 9.2 Runbook (Table 9.1)
+Steps from cloning and installing dependencies through seeding, development server, production build, Vercel configuration, and monitoring. Commands tailored for PowerShell/posix equivalents.
+
+### 9.3 Requirements
+Node.js 18.18+/20.x, npm 10+, MongoDB 6+, optional Firebase/Brevo accounts, modern browsers.
+
+### 9.4 Maintenance Plan
+Bootstrap guard, MongoDB backups, dependency updates, observability stack, and content updates through admin interfaces or direct DB edits.
+
+---
+
+## Section 10 – System Security and Privacy
+
+### 10.1 Access Control
+NextAuth credentials provider + JWT sessions, menu filtering, API route guards, seeded roles (admin, staff, teacher, student).
+
+### 10.2 Data Protection
+Bcrypt hashing, secret-backed sessions, tokenized email links, schema validation, HTTPS enforcement via Vercel.
+
+### 10.3 Backup & Recovery
+MongoDB snapshots, env-secret management, redundant storage for assets, re-running seed/bootstrap after restores.
+
+### 10.4 Compliance
+NDPR considerations, future activity logging, Brevo SMTP domain compliance, region-specific data residency controls.
+
+---
+
+## Section 11 – Documentation and User Manual
+
+### 11.1 User Guide
+Portal access → authentication → role-specific navigation → typical actions → logout.
+
+### 11.2 Admin Guide
+Invitations, menu/permission tuning, payment configuration, audit/log placeholders, institutional settings.
+
+### 11.3 Troubleshooting
+Login issues, access denial, email delivery, MongoDB connectivity, stale seed data remedies.
+
+### 11.4 Role Quick Reference (Table 11.1)
+Summarizes student, teacher, staff, and admin key screens/actions. API route source code doubles as living documentation.
+
+---
+
+## Section 12 – Conclusion and Recommendations
+
+### 12.1 Achievements
+Role-aware portals, seeded demo data, reusable services/components, documented plan + presentation.
+
+### 12.2 Limitations
+No automated tests, simulated payments only, placeholder analytics/logging, pending App Router/TypeScript migration.
+
+### 12.3 Future Enhancements
+Testing & observability, document generation, workflow automation, localization, distributed caching, UX/accessibility improvements.
+
+---
+
+## Section 13 – References
+
+- Vercel. (2024). *Next.js Documentation*. https://nextjs.org/docs
+- Meta. (2024). *React Documentation*. https://react.dev
+- MongoDB, Inc. (2024). *MongoDB Manual*. https://www.mongodb.com/docs
+- NextAuth.js. (2024). *NextAuth.js Documentation*. https://next-auth.js.org
+- Tailwind Labs. (2024). *Tailwind CSS v4 Preview*. https://tailwindcss.com
+- Sendinblue (Brevo). (2024). *SMTP Relay Guide*. https://www.brevo.com/smtp/
+- Google. (2024). *Firebase Admin SDK Documentation*. https://firebase.google.com/docs/admin
+- Microsoft. (2023). *Windows PowerShell 5.1 Documentation*. https://learn.microsoft.com/powershell
+- Vastro-lorde. (2025). *School Management System Repository*. GitHub. https://github.com/Vastro-lorde/school-management-system
+
+---
+
+## Section 14 – Appendices
+
+### Appendix A – Sample Code Snippets
+1. `src/lib/apiClient.js` (timeout-safe fetch wrapper)
+2. `src/server/services/permissionService.js` (menu/URL guard)
+3. `src/server/db/models/PaymentDetail.js` (installment validation hooks)
+
+### Appendix B – Screenshot References
+- B.1 Home/Landing (`pages/index.js`)
+- B.2 Admin Users dashboard (`pages/admin/users.js`)
+- B.3 Student Payments + installment modal (`pages/student/payments.js`)
+- B.4 Memo composer (`pages/memos/new.js`)
+
+### Appendix C – Project Schedule (from `docs/project-plan.md`)
+
+| Phase | Weeks | Scope Highlights |
+| --- | --- | --- |
+| 0 | 0–1 | Baseline setup, linting, TypeScript/App Router preparation |
+| 1 | 1–3 | Authentication, RBAC MVP, audit logs |
+| 2 | 3–5 | Academic structure CRUD, caching layer |
+| 3 | 5–8 | Student portal (dashboard, payments, documents) |
+| 4 | 8–11 | Teacher portal (assignments, grading workflows) |
+| 5 | 11–13 | Staff workspaces (finance, admissions, registry) |
+| 6 | 13–15 | Admin control center |
+| 7 | 15–16 | Document generation service |
+| 8 | 16–18 | Testing, observability, deployment hardening |
+
+### Appendix D – Data Dictionary Snapshot
+`settings.about`, `settings.contact`, `settings.history`, `StudentProfile.guardian`, `Payment.items[]` and their usage across pages/APIs.
+
+### Appendix E – Environment Variable Checklist
+
+| Variable | Purpose |
+| --- | --- |
+| `MONGO_URI` | MongoDB connection string |
+| `NEXTAUTH_URL` | Canonical NextAuth host |
+| `NEXTAUTH_SECRET` | Session/JWT signing secret |
+| `BREVO_API_KEY`, `BREVO_USER`, `EMAIL_FROM` | SMTP credentials |
+| `ADMIN_SEED_EMAIL`, `ADMIN_SEED_PASSWORD` | Bootstrap admin overrides |
+| `FIREBASE_*` | Firebase Admin credentials |
+| `NEXT_PUBLIC_APP_URL` | Used for invite/reset link generation |
