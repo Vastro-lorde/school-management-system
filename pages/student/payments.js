@@ -31,8 +31,8 @@ export default function StudentPaymentsPage({ menu }) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [meta, setMeta] = useState({ payments: [] });
-  const [form, setForm] = useState({ payment: '', useInstallments: false, installments: [], amount: 0, method: 'cash', reference: '', notes: '', date: '' });
+  const [paymentItems, setPaymentItems] = useState([]);
+  const [form, setForm] = useState({ paymentItemId: '', useInstallments: false, installments: [], amount: 0, method: 'cash', reference: '', notes: '', date: '' });
   const [instOpen, setInstOpen] = useState(false);
   const [instFor, setInstFor] = useState(null);
   const [instForm, setInstForm] = useState({ amount: 0, date: new Date().toISOString().slice(0,10), method: 'cash', reference: '' });
@@ -40,13 +40,13 @@ export default function StudentPaymentsPage({ menu }) {
   async function loadAll() {
     setLoading(true);
     try {
-      const [list, payments] = await Promise.all([
+      const [list, items] = await Promise.all([
         fetch('/api/student/payment-details').then(r => r.json()),
-        fetch('/api/student/payment-details/meta').then(r => r.json()),
+        fetch('/api/student/payment-items').then(r => r.json()),
       ]);
       if (list?.success) setRows(list.value || []);
       else if (list?.message) alert(list.message);
-      if (payments?.success) setMeta({ payments: payments.value.payments || [] });
+      if (items?.success) setPaymentItems(items.value || []);
     } catch (err) {
       console.error(err);
       alert('Failed to load payments');
@@ -85,7 +85,7 @@ export default function StudentPaymentsPage({ menu }) {
   async function submit(e) {
     e.preventDefault();
     const payload = {
-      payment: form.payment,
+      paymentItemId: form.paymentItemId,
       amount: Number(form.amount)||0,
       installments: form.useInstallments ? form.installments.map(i=>({ amount: Number(i.amount)||0, date: i.date, method: i.method, reference: i.reference })) : [],
       method: form.method,
@@ -96,7 +96,7 @@ export default function StudentPaymentsPage({ menu }) {
     const res = await fetch('/api/student/payment-details', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(r => r.json());
     if (res?.success) {
       setOpen(false);
-      setForm({ payment: '', useInstallments: false, installments: [], amount: 0, method: 'cash', reference: '', notes: '', date: '' });
+      setForm({ paymentItemId: '', useInstallments: false, installments: [], amount: 0, method: 'cash', reference: '', notes: '', date: '' });
       loadAll();
     } else {
       alert(res?.message || 'Failed to create');
@@ -166,10 +166,12 @@ export default function StudentPaymentsPage({ menu }) {
         <form onSubmit={submit} className="space-y-4">
           <label className="flex flex-col text-sm">
             <span className="mb-1">Payment</span>
-            <select name="payment" value={form.payment} onChange={onChange} className="border rounded px-2 py-2" required>
+            <select name="paymentItemId" value={form.paymentItemId} onChange={onChange} className="border rounded px-2 py-2" required>
               <option value="">Select payment</option>
-              {meta.payments.map(p => (
-                <option key={p._id} value={p._id}>{p.title}</option>
+              {paymentItems.map(item => (
+                <option key={item._id} value={item._id}>
+                  {item.name || item.code}
+                </option>
               ))}
             </select>
           </label>
