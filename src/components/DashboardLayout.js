@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import MenuIcon from './MenuIcon';
 import { FaChevronRight, FaChevronDown } from 'react-icons/fa';
@@ -50,6 +50,7 @@ function SidebarItem({ item, depth = 0, expanded, onToggle }) {
 
 export default function DashboardLayout({ menu = [], role, children }) {
   const [expanded, setExpanded] = useState({});
+  const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
   // collapsed by default; expand roots with current route in future enhancement
   const onToggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
@@ -107,7 +108,17 @@ export default function DashboardLayout({ menu = [], role, children }) {
       {/* Main */}
       <div className="flex-1 flex flex-col">
         <header className="h-14 border-b border-gray-200 dark:border-gray-800 flex items-center px-4 justify-between">
-          <div className="font-medium">Welcome</div>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="md:hidden p-2 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
+              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => setMobileOpen(v => !v)}
+            >
+              <MenuIcon name="menu" />
+            </button>
+            <div className="font-medium">Welcome</div>
+          </div>
           <div className="flex items-center gap-3 text-sm">
             <Link href="/" className="opacity-80 hover:opacity-100">Home</Link>
             <button
@@ -119,6 +130,40 @@ export default function DashboardLayout({ menu = [], role, children }) {
             </button>
           </div>
         </header>
+        {/* Mobile sidebar drawer */}
+        {mobileOpen && (
+          <div className="md:hidden fixed inset-0 z-40 flex">
+            <button
+              type="button"
+              className="flex-1 bg-black/30"
+              aria-label="Close menu"
+              onClick={() => setMobileOpen(false)}
+            />
+            <aside className="w-64 shrink-0 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 p-3 shadow-lg">
+              <div className="flex items-center justify-between mb-3 px-2">
+                <div className="font-semibold text-lg">
+                  Dashboard
+                  {role && (
+                    <span className="text-sm font-normal opacity-60 ml-1">({role})</span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-sm"
+                  aria-label="Close menu"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <nav className="space-y-1 overflow-y-auto max-h-[calc(100vh-4rem)]">
+                {menu.map(item => (
+                  <SidebarItem key={item._id} item={item} expanded={expanded} onToggle={onToggle} />
+                ))}
+              </nav>
+            </aside>
+          </div>
+        )}
         <main className="p-4">
           {children}
         </main>
