@@ -10,12 +10,18 @@ function Modal({ open, onClose, children, title = 'Make Payment' }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded shadow-lg w-full max-w-2xl">
-        <div className="px-4 py-3 border-b flex items-center justify-between">
-          <h3 className="font-semibold">{title}</h3>
-          <button className="text-sm px-2 py-1 rounded hover:bg-gray-100" onClick={onClose}>Close</button>
+      <div className="w-full max-w-2xl rounded shadow-lg bg-gray-900 text-gray-100 border border-gray-700">
+        <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
+          <h3 className="font-semibold text-sm md:text-base">{title}</h3>
+          <button
+            className="text-xs md:text-sm px-2 py-1 rounded border border-gray-600 hover:bg-gray-800"
+            onClick={onClose}
+            type="button"
+          >
+            Close
+          </button>
         </div>
-        <div className="p-4">{children}</div>
+        <div className="p-4 bg-gray-900">{children}</div>
       </div>
     </div>
   );
