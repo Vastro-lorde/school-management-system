@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import User from '../models/User.js';
 import StudentProfile from '../models/StudentProfile.js';
 import StaffProfile from '../models/StaffProfile.js';
+import ClassModel from '../models/Class.js';
 import { generateUniqueAdmissionNo } from '@/server/utils/generators.js';
 
 export async function ensureSampleStaffAndStudents() {
@@ -28,6 +29,9 @@ export async function ensureSampleStaffAndStudents() {
 
   const defaultPasswordHash = await bcrypt.hash('Password1!', 10);
 
+  // Preload classes for student assignment (if any exist)
+  const allClasses = await ClassModel.find({}).select('_id').lean();
+
   for (const s of staffList) {
     const exists = await User.findOne({ email: s.email }).lean();
     if (!exists) {
@@ -39,8 +43,8 @@ export async function ensureSampleStaffAndStudents() {
   }
 
   const studentList = [
-    { email: 'student1@example.com', firstName: 'Charlie', lastName: 'Brown', dob: new Date('2006-03-12'), sex: 'male' },
-    { email: 'student2@example.com', firstName: 'Dana', lastName: 'Lee', dob: new Date('2007-09-25'), sex: 'female' },
+    { email: 'student1@example.com', firstName: 'Charlie', lastName: 'Brown', dob: new Date('2006-03-12'), gender: 'male' },
+    { email: 'student2@example.com', firstName: 'Dana', lastName: 'Lee', dob: new Date('2007-09-25'), gender: 'female' },
   ];
 
   for (const s of studentList) {
@@ -48,7 +52,8 @@ export async function ensureSampleStaffAndStudents() {
     if (!exists) {
       const user = await User.create({ email: s.email, passwordHash: defaultPasswordHash, role: 'student', isActive: true });
       const admissionNo = await generateUniqueAdmissionNo();
-      const profile = await StudentProfile.create({ ...s, admissionNo, userId: user._id });
+      const classId = allClasses.length ? allClasses[Math.floor(Math.random() * allClasses.length)]._id : undefined;
+      const profile = await StudentProfile.create({ ...s, admissionNo, userId: user._id, ...(classId ? { classId } : {}) });
       await User.updateOne({ _id: user._id }, { $set: { profileRef: profile._id, profileModel: 'StudentProfile' } });
       console.log('[bootstrap] Seeded student:', s.email);
     }
@@ -66,7 +71,7 @@ export async function ensureSampleStaffAndStudents() {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  function randomSex() {
+  function randomGender() {
     return Math.random() < 0.5 ? 'male' : 'female';
   }
 
@@ -90,13 +95,15 @@ export async function ensureSampleStaffAndStudents() {
 
     const user = await User.create({ email, passwordHash: defaultPasswordHash, role: 'student', isActive: true });
     const admissionNo = await generateUniqueAdmissionNo();
+    const classId = allClasses.length ? allClasses[Math.floor(Math.random() * allClasses.length)]._id : undefined;
     const profile = await StudentProfile.create({
       firstName,
       lastName,
       dob: randomStudentDob(),
-      sex: randomSex(),
+      gender: randomGender(),
       admissionNo,
       userId: user._id,
+      ...(classId ? { classId } : {}),
     });
     await User.updateOne({ _id: user._id }, { $set: { profileRef: profile._id, profileModel: 'StudentProfile' } });
     console.log('[bootstrap] Seeded extra demo student:', email);

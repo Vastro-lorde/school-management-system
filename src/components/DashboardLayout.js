@@ -48,7 +48,7 @@ function SidebarItem({ item, depth = 0, expanded, onToggle }) {
   );
 }
 
-export default function DashboardLayout({ menu = [], children }) {
+export default function DashboardLayout({ menu = [], role, children }) {
   const [expanded, setExpanded] = useState({});
   const router = useRouter();
   // collapsed by default; expand roots with current route in future enhancement
@@ -89,7 +89,14 @@ export default function DashboardLayout({ menu = [], children }) {
     <div className="min-h-screen flex bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
       {/* Sidebar */}
       <aside className="w-64 shrink-0 border-r border-gray-200 dark:border-gray-800 p-3 hidden md:block">
-        <div className="font-semibold text-lg px-2 py-3">Dashboard</div>
+        <div className="px-2 py-3">
+          <div className="font-semibold text-lg">
+            Dashboard
+            {role && (
+              <span className="text-sm font-normal opacity-60 ml-1">({role})</span>
+            )}
+          </div>
+        </div>
         <nav className="space-y-1">
           {menu.map(item => (
             <SidebarItem key={item._id} item={item} expanded={expanded} onToggle={onToggle} />

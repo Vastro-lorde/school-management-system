@@ -66,10 +66,31 @@ export async function ensureSettings() {
 
 export async function ensureAdmin(defaultEmail, defaultPassword) {
   const User = (await import('../models/User.js')).default;
-  let admin = await User.findOne({ email: defaultEmail }).lean();
+  const StaffProfile = (await import('../models/StaffProfile.js')).default;
+
+  let admin = await User.findOne({ email: defaultEmail });
   if (!admin) {
     const passwordHash = await bcrypt.hash(defaultPassword, 10);
-    await User.create({ email: defaultEmail, passwordHash, role: 'admin', isActive: true });
+    admin = await User.create({ email: defaultEmail, passwordHash, role: 'admin', isActive: true });
     console.log('[bootstrap] Seeded admin user:', defaultEmail);
+  }
+
+  // Ensure admin has an associated staff profile (no photo seeded)
+  if (!admin.profileRef || admin.profileModel !== 'StaffProfile') {
+    let profile = await StaffProfile.findOne({ userId: admin._id });
+    if (!profile) {
+      profile = await StaffProfile.create({
+        userId: admin._id,
+        employeeId: 'ADM1001',
+        firstName: 'System',
+        lastName: 'Administrator',
+        department: 'Administration',
+      });
+      console.log('[bootstrap] Seeded admin staff profile for:', defaultEmail);
+    }
+
+    admin.profileRef = profile._id;
+    admin.profileModel = 'StaffProfile';
+    await admin.save();
   }
 }

@@ -11,6 +11,7 @@ const StudentProfileSchema = new mongoose.Schema({
   departmentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Department' },
   guardian: { name: String, phone: String, email: String },
   photoUrl: String,
+  avatarPublicId: String,
   // Student position (at most one)
   positionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Position' },
   // Historical submissions to course forms (one per form)

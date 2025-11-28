@@ -21,6 +21,7 @@ const StaffProfileSchema = new mongoose.Schema({
   facultyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Faculty' },
   hireDate: Date,
   photoUrl: String,
+  avatarPublicId: String,
   positionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Position' },
 }, { timestamps: true });
 

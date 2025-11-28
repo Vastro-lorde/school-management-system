@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAbout } from '@/api/settings';
+import { getSetting } from '@/api/settings';
 
 export default function About() {
   const [about, setAbout] = useState(null);
@@ -7,9 +7,10 @@ export default function About() {
 
   useEffect(() => {
     async function fetchAbout() {
-      const { data, error } = await getAbout();
-      if (error) {
-        setError(error);
+      const res = await getSetting('about');
+      const data = res?.data;
+      if (!data?.success) {
+        setError(data?.message || 'Failed to load about content');
         return;
       }
       setAbout(data);

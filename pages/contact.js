@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getContact } from '@/api/settings';
+import { getSetting } from '@/api/settings';
 
 export default function Contact() {
   const [contact, setContact] = useState(null);
@@ -7,9 +7,10 @@ export default function Contact() {
 
   useEffect(() => {
     async function fetchContact() {
-      const { data, error } = await getContact();
-      if (error) {
-        setError(error);
+      const res = await getSetting('contact');
+      const data = res?.data;
+      if (!data?.success) {
+        setError(data?.message || 'Failed to load contact details');
         return;
       }
       setContact(data);

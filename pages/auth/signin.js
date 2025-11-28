@@ -1,14 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { signIn } from 'next-auth/react';
 import Head from 'next/head';
 import AuthCard from '@/components/AuthCard';
 import LoadingButton from '@/components/LoadingButton';
 
 export default function SignIn() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    const { error: errorCode } = router.query;
+    if (!errorCode) return;
+
+    if (errorCode === 'CredentialsSignin') {
+      setError('Invalid email or password. Please check your details and try again.');
+    } else {
+      setError('Unable to sign in. Please try again.');
+    }
+  }, [router.isReady, router.query]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -5,9 +5,9 @@ import menuService from '../../src/server/services/menuService.js';
 import { authOptions } from '../api/auth/[...nextauth].js';
 import DashboardLayout from '../../src/components/DashboardLayout';
 
-export default function DashboardPage({ menu }) {
+export default function DashboardPage({ menu, role }) {
   return (
-    <DashboardLayout menu={menu}>
+    <DashboardLayout menu={menu} role={role}>
       <div className="space-y-2">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <p className="opacity-80">Choose a section from the sidebar to get started.</p>
@@ -31,5 +31,5 @@ export async function getServerSideProps(context) {
   const role = session.user?.role || 'student';
   const menu = await menuService.getMenuForRole(role);
 
-  return { props: { menu: JSON.parse(JSON.stringify(menu)) } };
+  return { props: { menu: JSON.parse(JSON.stringify(menu)), role } };
 }

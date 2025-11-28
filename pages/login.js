@@ -26,7 +26,13 @@ export default function Login() {
         password,
         callbackUrl: '/dashboard',
       });
-      if (res?.error) throw new Error(res.error);
+
+      if (res?.error) {
+        if (res.error === 'CredentialsSignin') {
+          throw new Error('Invalid email or password. Please check your details and try again.');
+        }
+        throw new Error(res.error);
+      }
       // NextAuth returns a URL; navigate explicitly when redirect is false
       if (res?.url) {
         await router.push(res.url);

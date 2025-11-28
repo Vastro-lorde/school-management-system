@@ -10,6 +10,7 @@ export default function StudentDetailsPage({ menu }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -23,10 +24,42 @@ export default function StudentDetailsPage({ menu }) {
   useEffect(() => {
     if (profile) {
       setAvatarUrl(profile.photoUrl || '');
+      setAvatarPublicId(profile.avatarPublicId || '');
       setFirstName(profile.firstName || '');
       setLastName(profile.lastName || '');
     }
   }, [profile]);
+
+  async function handleAvatarChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('destination', 'avatars');
+    setUploading(true);
+    try {
+      const res = await fetch('/api/files/upload', {
+        method: 'POST',
+        body: formData,
+      }).then(r => r.json());
+      if (!res?.url || !res?.publicId) throw new Error(res?.error || 'Failed to upload avatar');
+
+      const swap = await fetch('/api/me/avatar', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newAvatarUrl: res.url, newAvatarPublicId: res.publicId }),
+      }).then(r => r.json());
+      if (!swap?.success) throw new Error(swap?.message || 'Failed to update avatar');
+
+      setAvatarUrl(res.url);
+      setAvatarPublicId(res.publicId);
+    } catch (err) {
+      console.error(err);
+      alert(err.message || 'Failed to upload avatar');
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function handleSave(e) {
     e.preventDefault();
@@ -64,8 +97,22 @@ export default function StudentDetailsPage({ menu }) {
           <form onSubmit={handleSave} className="border rounded p-4 text-sm space-y-3">
             <div className="font-semibold mb-1">Edit Profile</div>
             <div>
-              <label className="block text-xs uppercase opacity-70 mb-1">Avatar URL</label>
-              <input className="w-full border rounded px-2 py-1 bg-gray-900/40" value={avatarUrl} onChange={e=>setAvatarUrl(e.target.value)} />
+              <label className="block text-xs uppercase opacity-70 mb-1">Avatar</label>
+              <div className="flex items-center gap-3">
+                <label className="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-600 text-white text-xs font-semibold cursor-pointer hover:bg-emerald-500">
+                  <span>{uploading ? 'Uploading...' : 'Change Avatar'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                </label>
+                {avatarUrl && (
+                  <span className="text-[10px] opacity-70 truncate max-w-[140px]">{avatarUrl}</span>
+                )}
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <div>

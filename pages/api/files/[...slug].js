@@ -1,7 +1,7 @@
 import { createRouter } from 'next-connect';
 import multer from 'multer';
-import { uploadFile, downloadFile, deleteFile } from '../../../src/server/services/storageService';
 import fs from 'fs';
+import { uploadImage } from '../../../src/server/services/cloudinaryService';
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -23,37 +23,23 @@ router.post(async (req, res) => {
   }
 
   try {
-    await uploadFile(file.path, destination || file.originalname);
+    const folder = destination || 'avatars';
+    const { url, publicId } = await uploadImage(file.path, folder);
     fs.unlinkSync(file.path); // Clean up the temporary file
-    res.status(200).json({ message: 'File uploaded successfully' });
+    res.status(200).json({ message: 'File uploaded successfully', url, publicId });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-router.get(async (req, res) => {
-  const { slug } = req.query;
-  const [fileName, ...destinationParts] = slug;
-  const destination = destinationParts.join('/');
-
-  try {
-    await downloadFile(fileName, `./public/downloads/${destination || fileName}`);
-    res.status(200).json({ message: 'File downloaded successfully' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+// Download and delete endpoints are not needed for Cloudinary in this flow,
+// but kept as stubs in case of future extension.
+router.get(async (_req, res) => {
+  return res.status(501).json({ error: 'Not implemented' });
 });
 
-router.delete(async (req, res) => {
-  const { slug } = req.query;
-  const [fileName] = slug;
-
-  try {
-    await deleteFile(fileName);
-    res.status(200).json({ message: 'File deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+router.delete(async (_req, res) => {
+  return res.status(501).json({ error: 'Not implemented' });
 });
 
 export const config = {

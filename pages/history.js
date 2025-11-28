@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getHistory } from '@/api/settings';
+import { getSetting } from '@/api/settings';
 
 export default function History() {
   const [history, setHistory] = useState(null);
@@ -7,9 +7,10 @@ export default function History() {
 
   useEffect(() => {
     async function fetchHistory() {
-      const { data, error } = await getHistory();
-      if (error) {
-        setError(error);
+      const res = await getSetting('history');
+      const data = res?.data;
+      if (!data?.success) {
+        setError(data?.message || 'Failed to load history');
         return;
       }
       setHistory(data);
