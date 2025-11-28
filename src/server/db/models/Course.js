@@ -41,6 +41,5 @@ const CourseSchema = new mongoose.Schema(
 );
 
 CourseSchema.index({ title: 1 });
-CourseSchema.index({ code: 1 }, { unique: true });
 
 module.exports = mongoose.models.Course || mongoose.model('Course', CourseSchema);

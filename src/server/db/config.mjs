@@ -13,6 +13,8 @@ if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
 }
 
+let bootstrapStarted = false;
+
 async function dbConnect() {
   if (!MONGO_URI) {
     if (isBuildTime) {
@@ -30,18 +32,20 @@ async function dbConnect() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGO_URI, opts).then(async (mongoose) => {
-      // run idempotent bootstrap after connection
-      try {
-        await runBootstrap();
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error('[dbConnect] Bootstrap failed:', e?.message || e);
-      }
-      return mongoose;
+    cached.promise = mongoose.connect(MONGO_URI, opts).then((mongoose) => mongoose);
+  }
+
+  cached.conn = await cached.promise;
+
+  // Kick off bootstrap once per process, but do not block the caller
+  if (!bootstrapStarted) {
+    bootstrapStarted = true;
+    runBootstrap().catch((e) => {
+      // eslint-disable-next-line no-console
+      console.error('[dbConnect] Background bootstrap failed:', e?.message || e);
     });
   }
-  cached.conn = await cached.promise;
+
   return cached.conn;
 }
 

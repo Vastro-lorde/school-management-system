@@ -131,6 +131,14 @@ export async function login(email, password) {
     throw new Error('Invalid email or password');
   }
 
+  // Ensure user has a linked profile where required
+  if (user.role === 'student' && !user.profileRef) {
+    throw new Error('Student profile not found. Please contact support.');
+  }
+  if (user.role === 'staff' && !user.profileRef) {
+    throw new Error('Staff profile not found. Please contact support.');
+  }
+
   const token = generateToken(user);
   return { user, token };
 }

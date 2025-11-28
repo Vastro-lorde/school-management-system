@@ -43,8 +43,8 @@ export default function Register() {
       payload.employeeId = form.employeeId;
     }
     const res = await apiClient.post('/api/auth/register', payload);
-    if (res.error) {
-      setError(res.error);
+    if (!res?.success) {
+      setError(res?.message || res?.error || 'Registration failed');
       return;
     }
     router.push('/login');

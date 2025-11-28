@@ -31,9 +31,14 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
     };
   }, [router.events]);
 
+  const dashboardRoots = ['/dashboard', '/admin', '/staff', '/student', '/portal'];
+  const shouldShowHeader = !dashboardRoots.some((p) =>
+    router.pathname === p || router.pathname.startsWith(`${p}/`)
+  );
+
   return (
     <SessionProvider session={session}>
-      <Header />
+      {shouldShowHeader && <Header />}
       <Suspense fallback={
         <div className="py-24 grid place-items-center">
           <LoadingSpinner size="lg" label="Loading..." />

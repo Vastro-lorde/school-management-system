@@ -41,10 +41,16 @@ export default function Login() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 relative overflow-hidden">
       <Head>
         <title>Login - School Management System</title>
       </Head>
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/img/login-bg.png')" }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/80 to-blue-900/60" />
+      <div className="relative w-full max-w-md px-4 sm:px-0">
       <AuthCard
         title="Welcome back"
         subtitle="Access your dashboard"
@@ -94,6 +100,7 @@ export default function Login() {
           </LoadingButton>
         </form>
       </AuthCard>
+      </div>
     </div>
   );
 }
