@@ -12,6 +12,7 @@ export default function StudentDetailsPage({ menu }) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarPublicId, setAvatarPublicId] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   useEffect(() => { (async () => {

@@ -133,13 +133,7 @@ export default function DashboardLayout({ menu = [], role, children }) {
         {/* Mobile sidebar drawer */}
         {mobileOpen && (
           <div className="md:hidden fixed inset-0 z-40 flex">
-            <button
-              type="button"
-              className="flex-1 bg-black/30"
-              aria-label="Close menu"
-              onClick={() => setMobileOpen(false)}
-            />
-            <aside className="w-64 shrink-0 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 p-3 shadow-lg">
+            <aside className="w-64 shrink-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 p-3 shadow-lg">
               <div className="flex items-center justify-between mb-3 px-2">
                 <div className="font-semibold text-lg">
                   Dashboard
@@ -162,6 +156,12 @@ export default function DashboardLayout({ menu = [], role, children }) {
                 ))}
               </nav>
             </aside>
+            <button
+              type="button"
+              className="flex-1 bg-black/30"
+              aria-label="Close menu"
+              onClick={() => setMobileOpen(false)}
+            />
           </div>
         )}
         <main className="p-4">
