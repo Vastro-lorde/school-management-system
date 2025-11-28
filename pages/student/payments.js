@@ -126,38 +126,56 @@ export default function StudentPaymentsPage({ menu }) {
 
       {loading ? (
         <div className="py-6 text-center opacity-80">Loading...</div>
+      ) : rows.length === 0 ? (
+        <div className="py-6 text-sm opacity-70">You have no payments yet.</div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border text-sm">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-3 py-2 text-left">Date</th>
-                <th className="px-3 py-2 text-left">Payment</th>
-                <th className="px-3 py-2 text-left">Amount</th>
-                <th className="px-3 py-2 text-left">Status</th>
-                <th className="px-3 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(rows || []).map(row => (
-                <tr key={row._id} className="border-t">
-                  <td className="px-3 py-2">{new Date(row.date || row.createdAt).toLocaleString()}</td>
-                  <td className="px-3 py-2">{row.payment?.title}</td>
-                  <td className="px-3 py-2">{Number(row.amount || 0).toLocaleString()}</td>
-                  <td className="px-3 py-2 capitalize">{row.status}</td>
-                  <td className="px-3 py-2">
-                    <button
-                      className="px-2 py-1 text-sm border rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={() => { setInstOpen(true); setInstFor(row._id); setInstForm({ amount: 0, date: new Date().toISOString().slice(0,10), method: 'cash', reference: '' }); }}
-                      disabled={row.status === 'completed' || row.status === 'failed' || row.status === 'refunded'}
-                    >
-                      Add installment
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {(rows || []).map(row => {
+            const createdAt = new Date(row.date || row.createdAt);
+            const disabled = row.status === 'completed' || row.status === 'failed' || row.status === 'refunded';
+            return (
+              <div
+                key={row._id}
+                className="rounded-lg border border-gray-800 bg-gray-900/80 p-4 shadow-sm flex flex-col gap-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="font-semibold text-sm truncate" title={row.payment?.title || 'Payment'}>
+                    {row.payment?.title || 'Payment'}
+                  </div>
+                  <div className="text-xs px-2 py-0.5 rounded-full bg-gray-800 capitalize">
+                    {row.status}
+                  </div>
+                </div>
+                <div className="flex items-baseline justify-between gap-2">
+                  <div className="text-lg font-semibold text-emerald-400">
+                    {Number(row.amount || 0).toLocaleString()}
+                  </div>
+                  <div className="text-xs opacity-70 text-right">
+                    {createdAt.toLocaleDateString()}&nbsp;
+                    <span className="hidden sm:inline">{createdAt.toLocaleTimeString()}</span>
+                  </div>
+                </div>
+                {row.payment?.description && (
+                  <div className="text-xs opacity-70 line-clamp-2" title={row.payment.description}>
+                    {row.payment.description}
+                  </div>
+                )}
+                <div className="mt-2 flex justify-end">
+                  <button
+                    className="px-2 py-1 text-xs border border-gray-700 rounded hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => {
+                      setInstOpen(true);
+                      setInstFor(row._id);
+                      setInstForm({ amount: 0, date: new Date().toISOString().slice(0,10), method: 'cash', reference: '' });
+                    }}
+                    disabled={disabled}
+                  >
+                    Add installment
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
