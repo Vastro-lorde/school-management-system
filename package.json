@@ -9,7 +9,9 @@
     "seed": "node -r dotenv/config --experimental-modules scripts/seed.mjs dotenv_config_path=.env.local",
     "lint": "npx eslint . --max-warnings=0",
     "migrate:sex-to-gender": "node scripts/migrate-sex-to-gender.mjs",
-    "assign:random-classes": "node scripts/assign-random-classes.mjs"
+    "assign:random-classes": "node scripts/assign-random-classes.mjs",
+    "seed:extra-students": "node scripts/seed-extra-students.mjs",
+    "assign:department-from-class": "node scripts/assign-department-from-class.mjs"
   },
   "dependencies": {
     "@next-auth/mongodb-adapter": "^1.1.3",
